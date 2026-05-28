@@ -15,7 +15,7 @@ public class Main {
     public static void main(String[] args) {
 
         Scanner sc = new Scanner(System.in);
-        ArrayList<BankAccount> accounts = new ArrayList<>();
+        ArrayList<BankAccount> accounts = FileHandler.loadAccounts();
 
         int choice;
 
@@ -57,6 +57,7 @@ public class Main {
 
                     BankAccount newAcc = new BankAccount(accNo, name, bal, pin);
                     accounts.add(newAcc);
+                    FileHandler.saveAccounts(accounts);
 
                     System.out.println("Account Created Successfully!");
                     break;
@@ -76,6 +77,7 @@ public class Main {
                             System.out.print("Enter Amount: ");
                             double amt = sc.nextDouble();
                             acc1.deposit(amt);
+                            FileHandler.saveAccounts(accounts);
                             acc1.displayBalance();
                         } else {
                             System.out.println("Wrong PIN!");
@@ -100,6 +102,7 @@ public class Main {
                             System.out.print("Enter Amount: ");
                             double amt = sc.nextDouble();
                             acc2.withdraw(amt);
+                            FileHandler.saveAccounts(accounts);
                             acc2.displayBalance();
                         } else {
                             System.out.println("Wrong PIN!");
@@ -189,6 +192,8 @@ public class Main {
                     } else {
                         sender.balance -= amount;
                         receiver.balance += amount;
+                        
+                        FileHandler.saveAccounts(accounts);
 
                         sender.transactions.add("Transferred: " + amount + " to Acc " + receiverAccNo);
                         receiver.transactions.add("Received: " + amount + " from Acc " + senderAccNo);
