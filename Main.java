@@ -26,14 +26,16 @@ public class Main {
             System.out.println("3. Withdraw");
             System.out.println("4. Check Balance");
             System.out.println("5. Account Details");
-            System.out.println("6. Exit");
+            System.out.println("6. Transfer Money");
+            System.out.println("7. Transaction History");
+            System.out.println("8. Exit");
 
             System.out.print("Enter Choice: ");
             choice = sc.nextInt();
 
             switch (choice) {
 
-                case 1:
+                case 1: {
                     System.out.print("Enter Account Number: ");
                     int accNo = sc.nextInt();
 
@@ -58,8 +60,9 @@ public class Main {
 
                     System.out.println("Account Created Successfully!");
                     break;
+                }
 
-                case 2:
+                case 2: {
                     System.out.print("Enter Account Number: ");
                     int dAcc = sc.nextInt();
 
@@ -81,8 +84,9 @@ public class Main {
                         System.out.println("Account not found!");
                     }
                     break;
+                }
 
-                case 3:
+                case 3: {
                     System.out.print("Enter Account Number: ");
                     int wAcc = sc.nextInt();
 
@@ -104,8 +108,9 @@ public class Main {
                         System.out.println("Account not found!");
                     }
                     break;
+                }
 
-                case 4:
+                case 4: {
                     System.out.print("Enter Account Number: ");
                     int bAcc = sc.nextInt();
 
@@ -124,8 +129,9 @@ public class Main {
                         System.out.println("Account not found!");
                     }
                     break;
+                }
 
-                case 5:
+                case 5: {
                     System.out.print("Enter Account Number: ");
                     int aAcc = sc.nextInt();
 
@@ -144,16 +150,92 @@ public class Main {
                         System.out.println("Account not found!");
                     }
                     break;
+                }
 
-                case 6:
+                case 6: {
+                    System.out.print("Enter Sender Account Number: ");
+                    int senderAccNo = sc.nextInt();
+
+                    BankAccount sender = findAccount(accounts, senderAccNo);
+
+                    if (sender == null) {
+                        System.out.println("Sender account not found!");
+                        break;
+                    }
+
+                    System.out.print("Enter PIN: ");
+                    int p = sc.nextInt();
+
+                    if (!sender.checkPin(p)) {
+                        System.out.println("Wrong PIN!");
+                        break;
+                    }
+
+                    System.out.print("Enter Receiver Account Number: ");
+                    int receiverAccNo = sc.nextInt();
+
+                    BankAccount receiver = findAccount(accounts, receiverAccNo);
+
+                    if (receiver == null) {
+                        System.out.println("Receiver account not found!");
+                        break;
+                    }
+
+                    System.out.print("Enter Amount: ");
+                    double amount = sc.nextDouble();
+
+                    if (amount > sender.balance) {
+                        System.out.println("Insufficient Balance!");
+                    } else {
+                        sender.balance -= amount;
+                        receiver.balance += amount;
+
+                        sender.transactions.add("Transferred: " + amount + " to Acc " + receiverAccNo);
+                        receiver.transactions.add("Received: " + amount + " from Acc " + senderAccNo);
+
+                        System.out.println("Transfer Successful!");
+                        sender.displayBalance();
+                    }
+                    break;
+                }
+
+                case 7: {
+                    System.out.print("Enter Account Number: ");
+                    int hAcc = sc.nextInt();
+
+                    BankAccount acc = findAccount(accounts, hAcc);
+
+                    if (acc != null) {
+                        System.out.print("Enter PIN: ");
+                        int p = sc.nextInt();
+
+                        if (acc.checkPin(p)) {
+                            System.out.println("\n--- Transaction History ---");
+
+                            if (acc.transactions.isEmpty()) {
+                                System.out.println("No transactions yet.");
+                            } else {
+                                for (String t : acc.transactions) {
+                                    System.out.println(t);
+                                }
+                            }
+                        } else {
+                            System.out.println("Wrong PIN!");
+                        }
+                    } else {
+                        System.out.println("Account not found!");
+                    }
+                    break;
+                }
+                case 8: {
                     System.out.println("Thank You!");
                     break;
-
+                }
                 default:
                     System.out.println("Invalid Choice");
             }
 
-        } while (choice != 6);
+        } while (choice != 8);
 
         sc.close();
     }
