@@ -19,16 +19,30 @@ public class BankAccount {
 
     void deposit(double amount) {
         balance += amount;
-        transactions.add("Deposited: " + amount);
+
+        String transaction = "Deposited: " + amount;
+
+        transactions.add(transaction);
+
+        FileHandler.saveTransaction(accountNumber, transaction);
+
         System.out.println("Amount Deposited Successfully");
     }
 
     void withdraw(double amount) {
+
         if (amount > balance) {
             System.out.println("Insufficient Balance");
         } else {
+
             balance -= amount;
-            transactions.add("Withdrawn: " + amount);
+
+            String transaction = "Withdrawn: " + amount;
+
+            transactions.add(transaction);
+
+            FileHandler.saveTransaction(accountNumber, transaction);
+
             System.out.println("Withdrawal Successful");
         }
     }
@@ -45,5 +59,10 @@ public class BankAccount {
 
     boolean checkPin(int inputPin) {
         return this.pin == inputPin;
+    }
+
+    void changePin(int newPin) {
+        this.pin = newPin;
+        System.out.println("PIN changed successfully!");
     }
 }

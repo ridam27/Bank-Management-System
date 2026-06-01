@@ -28,7 +28,9 @@ public class Main {
             System.out.println("5. Account Details");
             System.out.println("6. Transfer Money");
             System.out.println("7. Transaction History");
-            System.out.println("8. Exit");
+            System.out.println("8. Change PIN");
+            System.out.println("9. Admin Panel");
+            System.out.println("10. Exit");
 
             System.out.print("Enter Choice: ");
             choice = sc.nextInt();
@@ -192,11 +194,16 @@ public class Main {
                     } else {
                         sender.balance -= amount;
                         receiver.balance += amount;
-                        
-                        FileHandler.saveAccounts(accounts);
 
-                        sender.transactions.add("Transferred: " + amount + " to Acc " + receiverAccNo);
-                        receiver.transactions.add("Received: " + amount + " from Acc " + senderAccNo);
+                        String senderTransaction = "Transferred: " + amount + " to Acc " + receiverAccNo;
+
+                        String receiverTransaction = "Received: " + amount + " from Acc " + senderAccNo;
+
+                        sender.transactions.add(senderTransaction);
+                        receiver.transactions.add(receiverTransaction);
+
+                        FileHandler.saveTransaction(sender.accountNumber, senderTransaction);
+                        FileHandler.saveTransaction(receiver.accountNumber, receiverTransaction);
 
                         System.out.println("Transfer Successful!");
                         sender.displayBalance();
@@ -205,34 +212,122 @@ public class Main {
                 }
 
                 case 7: {
+
                     System.out.print("Enter Account Number: ");
                     int hAcc = sc.nextInt();
 
                     BankAccount acc = findAccount(accounts, hAcc);
 
-                    if (acc != null) {
-                        System.out.print("Enter PIN: ");
-                        int p = sc.nextInt();
-
-                        if (acc.checkPin(p)) {
-                            System.out.println("\n--- Transaction History ---");
-
-                            if (acc.transactions.isEmpty()) {
-                                System.out.println("No transactions yet.");
-                            } else {
-                                for (String t : acc.transactions) {
-                                    System.out.println(t);
-                                }
-                            }
-                        } else {
-                            System.out.println("Wrong PIN!");
-                        }
-                    } else {
+                    if (acc == null) {
                         System.out.println("Account not found!");
+                        break;
                     }
+
+                    System.out.print("Enter PIN: ");
+                    int p = sc.nextInt();
+
+                    if (!acc.checkPin(p)) {
+                        System.out.println("Wrong PIN!");
+                        break;
+                    }
+
+                    System.out.println("\n--- Transaction History ---");
+
+                    ArrayList<String> history = FileHandler.loadTransactions(acc.accountNumber);
+
+                    if (history.isEmpty()) {
+                        System.out.println("No transactions yet.");
+                    } else {
+                        for (String t : history) {
+                            System.out.println(t);
+                        }
+                    }
+
                     break;
                 }
                 case 8: {
+
+                    System.out.print("Enter Account Number: ");
+                    int accNo = sc.nextInt();
+
+                    BankAccount account = findAccount(accounts, accNo);
+
+                    if (account == null) {
+                        System.out.println("Account not found!");
+                        break;
+                    }
+
+                    System.out.print("Enter Current PIN: ");
+                    int currentPin = sc.nextInt();
+
+                    if (!account.checkPin(currentPin)) {
+                        System.out.println("Incorrect PIN!");
+                        break;
+                    }
+
+                    System.out.print("Enter New PIN: ");
+                    int newPin = sc.nextInt();
+
+                    account.changePin(newPin);
+
+                    FileHandler.saveAccounts(accounts);
+
+                    break;
+                }
+
+                case 9: {
+                    System.out.print("Enter Admin Password: ");
+                    String adminPass = sc.next();
+
+                    if (adminPass.equals("1206")) {
+                        int adminChoice;
+
+                        do {
+
+                            System.out.println("\n=== ADMIN PANEL ===");
+                            System.out.println("1. View All Accounts");
+                            System.out.println("2. Total Accounts");
+                            System.out.println("3. Total Bank Balance");
+                            System.out.println("4. Exit Admin Panel");
+
+                            System.out.print("Enter Choice: ");
+                            adminChoice = sc.nextInt();
+
+                            switch (adminChoice) {
+
+                                case 1: {
+                                    Admin.viewAllAccounts(accounts);
+                                    break;
+                                }
+
+                                case 2: {
+                                    Admin.totalAccounts(accounts);
+                                    break;
+                                }
+
+                                case 3: {
+                                    Admin.totalBankBalance(accounts);
+                                    break;
+                                }
+
+                                case 4: {
+                                    System.out.println("Thank You!");
+                                    break;
+                                }
+
+                                default:
+                                    System.out.println("Invalid Choice");
+
+                            }
+                        } while (adminChoice != 4);
+
+                    } else {
+                        System.out.println("Wrong Admin Password!");
+                    }
+
+                    break;
+                }
+                case 10: {
                     System.out.println("Thank You!");
                     break;
                 }
@@ -240,7 +335,7 @@ public class Main {
                     System.out.println("Invalid Choice");
             }
 
-        } while (choice != 8);
+        } while (choice != 10);
 
         sc.close();
     }

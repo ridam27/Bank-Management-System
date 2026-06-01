@@ -12,9 +12,9 @@ public class FileHandler {
 
             for (BankAccount acc : accounts) {
                 writer.write(acc.accountNumber + "," +
-                             acc.name + "," +
-                             acc.balance + "," +
-                             acc.pin);
+                        acc.name + "," +
+                        acc.balance + "," +
+                        acc.pin);
                 writer.newLine();
             }
 
@@ -50,4 +50,48 @@ public class FileHandler {
 
         return accounts;
     }
+
+    public static void saveTransaction(int accountNumber, String transaction) {
+
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter("transactions.txt", true));
+
+            writer.write(accountNumber + ":" + transaction);
+            writer.newLine();
+
+            writer.close();
+
+        } catch (Exception e) {
+            System.out.println("Error saving transaction!");
+        }
+    }
+
+    public static ArrayList<String> loadTransactions(int accountNumber) {
+
+        ArrayList<String> history = new ArrayList<>();
+
+        try {
+
+            BufferedReader reader = new BufferedReader(new FileReader("transactions.txt"));
+
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+
+                if (line.startsWith(accountNumber + ":")) {
+
+                    history.add(line.substring(
+                            line.indexOf(":") + 1));
+                }
+            }
+
+            reader.close();
+
+        } catch (Exception e) {
+            System.out.println("No transaction history found.");
+        }
+
+        return history;
+    }
+
 }

@@ -1,0 +1,3 @@
+102:Withdrawn: 500.0
+102:Transferred: 250.0 to Acc 101
+101:Received: 250.0 from Acc 102
